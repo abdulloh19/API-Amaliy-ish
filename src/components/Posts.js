@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { dooGet } from "./servise";
+import SelectUser from "./SelectUser";
+import PostModal from "./PostModal";
+import { dooGet, doPost } from "./servise";
 
 const Posts = ({ history }) => {
   const filter = (userId) => {
@@ -7,18 +9,14 @@ const Posts = ({ history }) => {
   };
 
   const [data, setData] = useState([]);
-  const [post, setPost] = useState([]);
   const [user, setUser] = useState([]);
+  const [post, setPost] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   async function getPosts() {
     const res = await dooGet("/posts");
     setPost(res);
     setData(res);
-  }
-
-  async function getUser() {
-    const user = await dooGet("/users");
-    setUser(user);
   }
 
   useEffect(() => {
@@ -30,26 +28,41 @@ const Posts = ({ history }) => {
     history.push("/posts/" + id);
   };
 
-  function onChangeSelect(event) {
-    const userId = event.target.value;
+  async function getUser() {
+    const users = await dooGet("/users");
+    setUser(users);
+  }
 
+  function onChangeUser(userId) {
     const res = filter(userId);
     setPost(res);
+  }
+
+  async function savePost(data) {
+    const res = await doPost("/posts", data);
+    console.log(res);
+  }
+
+  function toggleModal() {
+    setModalVisible((prev) => !prev);
+  }
+  function onSubmit(data) {
+    data.user = user;
+    setModalVisible(false);
+    savePost(data);
+    console.log(data);
   }
 
   return (
     <div>
       <h1 className="text-center">Posts</h1>
+
+      <button className="float-end btn btn-dark mx-5" onClick={toggleModal}>
+        Add
+      </button>
       <div className="row my-4 offset-1">
         <div className="col-md-3">
-          <select onChange={onChangeSelect} className="form-control">
-            <option value={""}>All</option>
-            {user.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
+          <SelectUser onChangeUser={onChangeUser} />
         </div>
       </div>
       <div className="row mt-5 col-md-10 offset-1">
@@ -67,6 +80,12 @@ const Posts = ({ history }) => {
           </div>
         ))}
       </div>
+      <PostModal
+        isOpen={modalVisible}
+        toggle={toggleModal}
+        save={onSubmit}
+        onChangeUser={onChangeUser}
+      />
     </div>
   );
 };

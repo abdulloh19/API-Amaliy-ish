@@ -1,10 +1,10 @@
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { dooGet } from "./servise";
 import Todo from "../todo/Todo";
+import SelectUser from "./SelectUser";
 
 const Todos = () => {
   const [data, setData] = useState([]);
-  const [users, setUsers] = useState([]);
   const [todos, setTodos] = useState([]);
   const [filtering, setFiltering] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -27,14 +27,8 @@ const Todos = () => {
     setTodos(res.filter((item, index) => index >= 0 && index < 10));
     setData(res);
   }
-  async function getUsers() {
-    const res = await dooGet("/users");
-    setUsers(res);
-  }
 
-  function onChangeSelect(event) {
-    const userId = event.target.value;
-
+  function onChangeSelect(userId) {
     const res = filter(userId, completed, pages);
     setTodos(res);
     setCurrenUser(userId);
@@ -42,7 +36,6 @@ const Todos = () => {
 
   function onPrev() {
     setPages((prev) => prev - 1);
-    
   }
   function onNext() {
     setPages((prev) => prev + 1);
@@ -50,7 +43,6 @@ const Todos = () => {
 
   useEffect(() => {
     getTodos();
-    getUsers();
   }, []);
 
   useEffect(() => {
@@ -71,31 +63,19 @@ const Todos = () => {
     setCurrenUser("");
     setCompleted(false);
     setFiltering(false);
-    setPages(1)
+    setPages(1);
   }
 
   return (
     <div className="row offset-1">
+      
       <div className="col-md-1">
         <button className="btn btn-danger my-3" onClick={reset}>
           Reset
         </button>
       </div>
       <div className="col-md-3">
-        <select
-          className="form-control mt-3 option"
-          value={currentUser ? parseInt(currentUser) : ""}
-          onChange={onChangeSelect}
-        >
-          <option value="" className="option">
-            All
-          </option>
-          {users.map((item) => (
-            <option value={item.id} key={item.id}>
-              {item.id}. {item.name}
-            </option>
-          ))}
-        </select>
+        <SelectUser onChangeUser={onChangeSelect} />
       </div>
 
       <div className="col-md-2 my-3">
