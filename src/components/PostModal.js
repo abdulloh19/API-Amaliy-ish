@@ -23,12 +23,7 @@ const PostModal = ({ toggle, save, isOpen }) => {
     getUser();
   }, []);
 
-  const {
-    register,
-    handleSubmit,
-    // watch,
-    // formState: { errors },
-  } = useForm();
+  const { register, handleSubmit } = useForm();
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
@@ -67,12 +62,7 @@ const PostModal = ({ toggle, save, isOpen }) => {
         </form>
       </ModalBody>
       <ModalFooter>
-        <button
-          type="submit"
-          form="form"
-          className="btn btn-success"
-          onClick={save}
-        >
+        <button type="submit" form="form" className="btn btn-success">
           Save
         </button>
         <button className="btn btn-danger" onClick={toggle}>

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import SelectUser from "./SelectUser";
 import PostModal from "./PostModal";
 import { dooGet, doPost } from "./servise";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Posts = ({ history }) => {
   const filter = (userId) => {
@@ -9,7 +11,6 @@ const Posts = ({ history }) => {
   };
 
   const [data, setData] = useState([]);
-  const [user, setUser] = useState([]);
   const [post, setPost] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -21,17 +22,11 @@ const Posts = ({ history }) => {
 
   useEffect(() => {
     getPosts();
-    getUser();
   }, []);
 
   const openOnePost = (id) => {
     history.push("/posts/" + id);
   };
-
-  async function getUser() {
-    const users = await dooGet("/users");
-    setUser(users);
-  }
 
   function onChangeUser(userId) {
     const res = filter(userId);
@@ -40,15 +35,20 @@ const Posts = ({ history }) => {
 
   async function savePost(data) {
     const res = await doPost("/posts", data);
-    console.log(res);
+    setData((prev) => {
+      prev.unshift(res);
+      setPost([...prev]);
+      console.log(prev);
+      return prev;
+    });
   }
 
   function toggleModal() {
     setModalVisible((prev) => !prev);
   }
   function onSubmit(data) {
-    data.user = user;
     setModalVisible(false);
+    toast.success("added users");
     savePost(data);
     console.log(data);
   }
@@ -56,7 +56,7 @@ const Posts = ({ history }) => {
   return (
     <div>
       <h1 className="text-center">Posts</h1>
-
+      <ToastContainer />
       <button className="float-end btn btn-dark mx-5" onClick={toggleModal}>
         Add
       </button>
