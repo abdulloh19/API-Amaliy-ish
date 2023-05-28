@@ -48,15 +48,35 @@ const Posts = ({ history }) => {
   }
   function onSubmit(data) {
     setModalVisible(false);
-    toast.success("added users");
     savePost(data);
     console.log(data);
+    toast.success("Added user!", {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   }
 
   return (
     <div>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <h1 className="text-center">Posts</h1>
-      <ToastContainer />
       <button className="float-end btn btn-dark mx-5" onClick={toggleModal}>
         Add
       </button>
